@@ -2,17 +2,22 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 
-With the `ovh` integration you can keep your current IP address in sync with your [OVH DynHost](https://docs.ovh.com/ie/en/domains/hosting_dynhost/)  hostname or domain.  
+With the `ovh` integration you can keep your current IP address in sync with
+your [OVH DynHost](https://docs.ovh.com/ie/en/domains/hosting_dynhost/)
+hostname or domain.
 
-To use the integration in your installation, add the following to your `configuration.yaml` file:
+To use the integration in your installation, add the following to your
+`configuration.yaml` file:
 
 #### Configuration variables:
-| Variable |  Required  |  Type  | Description |
-| -------- | ---------- | ----------- | ----------- |
-| `domain` | yes | string |  The subdomain/subdomains you are modifying the DNS configuration for |
-| `username` | yes | string | The DynHost username |
-| `password` | yes | string | Password for the DynHost username |
-| `scan_interval` | no |  time | How often to call the update service (seconds). (default: 10 minutes) |
+
+| Variable           | Required | Type   | Description                                                                        |
+|--------------------|----------|--------|------------------------------------------------------------------------------------|
+| `domain`           | yes      | string | The subdomain/subdomains you are modifying the DNS configuration for               |
+| `username`         | yes      | string | The DynHost username                                                               |
+| `password`         | yes      | string | Password for the DynHost username                                                  |
+| `scan_interval`    | no       | time   | How often to call the update service (seconds). (default: 900 seconds, 15 minutes) |
+| `ohv_api_endpoint` | no       | string | The OVH api endpoint for DynHost update. (default: "www.ovh.com/nic/update")       |
 
 #### Basic Example:
 
@@ -25,7 +30,8 @@ ovh:
 
 #### Example with two domains and scan interval:
 
-Suports multiple subdomains separated by a comma if they all use the same DynHost username and password.
+Suports multiple subdomains separated by a comma if they all use the same
+DynHost username and password.
 
 ```yaml
 ovh:
@@ -35,4 +41,7 @@ ovh:
   scan_interval: 300
 ```
 
-Based on the official [No-IP.com](https://github.com/home-assistant/core/tree/dev/homeassistant/components/no_ip) and [Mythic Beasts](https://github.com/home-assistant/core/blob/dev/homeassistant/components/mythicbeastsdns) integrations. Thanks to the creators!
+Based on the
+official [No-IP.com](https://github.com/home-assistant/core/tree/dev/homeassistant/components/no_ip)
+and [Mythic Beasts](https://github.com/home-assistant/core/blob/dev/homeassistant/components/mythicbeastsdns)
+integrations. Thanks to the creators!
