@@ -24,7 +24,9 @@ ovh:
 ```
 
 #### Example with two domains and scan interval:
+
 Suports multiple subdomains separated by a comma if they all use the same DynHost username and password.
+
 ```yaml
 ovh:
   domain: "subdomain1.domain.com,subdomain2.domain.com"
@@ -32,4 +34,5 @@ ovh:
   password: YOUR_PASSWORD
   scan_interval: 300
 ```
+
 Based on the official [No-IP.com](https://github.com/home-assistant/core/tree/dev/homeassistant/components/no_ip) and [Mythic Beasts](https://github.com/home-assistant/core/blob/dev/homeassistant/components/mythicbeastsdns) integrations. Thanks to the creators!
