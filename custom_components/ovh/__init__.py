@@ -12,7 +12,6 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_USERNAME,
     CONF_SCAN_INTERVAL,
-    CONF_OVH_API_ENDPOINT
 )
 
 from homeassistant.core import HomeAssistant
@@ -25,6 +24,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "ovh"
 CURRENT_IP = None  # Variabile globale per memorizzare l'IP
+CONF_OVH_API_ENDPOINT = "ovh_api_endpoint"
 
 DEFAULT_INTERVAL = timedelta(minutes=15)
 DEFAULT_API_ENDPOINT = "www.ovh.com/nic/update"
