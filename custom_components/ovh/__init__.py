@@ -23,8 +23,9 @@ from homeassistant.helpers.typing import ConfigType
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "ovh"
-CURRENT_IP = None  # Variabile globale per memorizzare l'IP
 CONF_OVH_API_ENDPOINT = "ovh_api_endpoint"
+# Global dictionary to store current IPs of each domain
+CURRENT_IPS = {}
 
 DEFAULT_INTERVAL = timedelta(minutes=15)
 DEFAULT_API_ENDPOINT = "www.ovh.com/nic/update"
@@ -86,34 +87,34 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 async def _update_ovh(session, api_endpoint, domain, user, password):
     """Update OVH."""
-    global CURRENT_IP
+    global CURRENT_IPS
     try:
-        # Ottieni l'IP corrente solo se non è memorizzato
+        # Get the current IP address
         ip_response = await session.get("https://api.ipify.org")
         ip_address = await ip_response.text()
 
-        # Se l'IP non è cambiato, esci
-        if CURRENT_IP == ip_address:
-            _LOGGER.debug("IP non cambiato per il dominio %s: %s", domain, ip_address)
+        # If the IP has not changed for this domain, exit.
+        if domain in CURRENT_IPS and CURRENT_IPS[domain] == ip_address:
+            _LOGGER.debug("IP not changed for domain %s: %s", domain, ip_address)
             return True
 
-        # Aggiorna l'IP memorizzato e procedi con l'aggiornamento OVH
-        CURRENT_IP = ip_address
+        # Update OVH
         url = f"https://{user}:{password}@{api_endpoint}?system=dyndns&hostname={domain}&myip={ip_address}"
         async with async_timeout.timeout(TIMEOUT):
             resp = await session.get(url)
             body = await resp.text()
 
             if body.startswith("good") or body.startswith("nochg"):
-                _LOGGER.info("Updating OVH for domain: %s", domain)
+                CURRENT_IPS[domain] = ip_address
+                _LOGGER.info("OVH update for the domain: %s", domain)
                 return True
 
-            _LOGGER.warning("Updating OVH failed: %s => %s", domain, OVH_ERRORS[body.strip()])
+            _LOGGER.warning("OVH upgrade failed: %s => %s", domain, OVH_ERRORS[body.strip()])
 
     except aiohttp.ClientError:
-        _LOGGER.warning("Can't connect to OVH API")
+        _LOGGER.warning("Unable to connect to the OVH API")
 
     except asyncio.TimeoutError:
-        _LOGGER.warning("Timeout from OVH API for domain: %s", domain)
+        _LOGGER.warning("Timeout from the OVH API for the domain: %s", domain)
 
     return False
