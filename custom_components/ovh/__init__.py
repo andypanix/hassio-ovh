@@ -12,7 +12,7 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_USERNAME,
     CONF_SCAN_INTERVAL,
-    CONF_OHV_API_ENDPOINT
+    CONF_OVH_API_ENDPOINT
 )
 
 from homeassistant.core import HomeAssistant
@@ -48,7 +48,7 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_INTERVAL): vol.All(
                     cv.time_period, cv.positive_timedelta
                 ),
-                vol.Optional(CONF_OHV_API_ENDPOINT, default=DEFAULT_API_ENDPOINT): cv.string,
+                vol.Optional(CONF_OVH_API_ENDPOINT, default=DEFAULT_API_ENDPOINT): cv.string,
             }
         )
     },
@@ -63,7 +63,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     user = conf.get(CONF_USERNAME).strip()
     password = conf.get(CONF_PASSWORD).strip()
     interval = conf.get(CONF_SCAN_INTERVAL)
-    api_endpoint = conf.get(CONF_OHV_API_ENDPOINT).strip()
+    api_endpoint = conf.get(CONF_OVH_API_ENDPOINT).strip()
     domains_list = domains.split(",")
 
     session = async_get_clientsession(hass)

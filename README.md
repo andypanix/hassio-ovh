@@ -17,7 +17,7 @@ To use the integration in your installation, add the following to your
 | `username`         | yes      | string | The DynHost username                                                               |
 | `password`         | yes      | string | Password for the DynHost username                                                  |
 | `scan_interval`    | no       | time   | How often to call the update service (seconds). (default: 900 seconds, 15 minutes) |
-| `ohv_api_endpoint` | no       | string | The OVH api endpoint for DynHost update. (default: "www.ovh.com/nic/update")       |
+| `ovh_api_endpoint` | no       | string | The OVH api endpoint for DynHost update. (default: "www.ovh.com/nic/update")       |
 
 #### Basic Example:
 
