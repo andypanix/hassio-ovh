@@ -24,6 +24,7 @@ from homeassistant.helpers.typing import ConfigType
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "ovh"
+CURRENT_IP = None  # Variabile globale per memorizzare l'IP
 
 DEFAULT_INTERVAL = timedelta(minutes=15)
 DEFAULT_API_ENDPOINT = "www.ovh.com/nic/update"
@@ -69,14 +70,14 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     session = async_get_clientsession(hass)
 
     for domain in domains_list:
-        result = await _update_ovh(hass, session, domain, user, password)
+        result = await _update_ovh(hass, session, api_endpoint, domain, user, password)
         if not result:
             return False
 
     async def update_domain_interval(now):
         """Update the OVH entry."""
         for domain in domains_list:
-            await _update_ovh(hass, session, domain, user, password)
+            await _update_ovh(hass, session, api_endpoint, domain, user, password)
 
     async_track_time_interval(hass, update_domain_interval, interval)
 
@@ -85,15 +86,26 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 async def _update_ovh(session, api_endpoint, domain, user, password):
     """Update OVH."""
+    global CURRENT_IP
     try:
-        url = f"https://{user}:{password}@{api_endpoint}?system=dyndns&hostname={domain}"
+        # Ottieni l'IP corrente solo se non è memorizzato
+        ip_response = await session.get("https://api.ipify.org")
+        ip_address = await ip_response.text()
+
+        # Se l'IP non è cambiato, esci
+        if CURRENT_IP == ip_address:
+            _LOGGER.debug("IP non cambiato per il dominio %s: %s", domain, ip_address)
+            return True
+
+        # Aggiorna l'IP memorizzato e procedi con l'aggiornamento OVH
+        CURRENT_IP = ip_address
+        url = f"https://{user}:{password}@{api_endpoint}?system=dyndns&hostname={domain}&myip={ip_address}"
         async with async_timeout.timeout(TIMEOUT):
             resp = await session.get(url)
             body = await resp.text()
 
             if body.startswith("good") or body.startswith("nochg"):
                 _LOGGER.info("Updating OVH for domain: %s", domain)
-
                 return True
 
             _LOGGER.warning("Updating OVH failed: %s => %s", domain, OVH_ERRORS[body.strip()])
