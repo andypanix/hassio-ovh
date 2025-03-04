@@ -11,8 +11,10 @@ from homeassistant.const import (
     CONF_DOMAIN,
     CONF_PASSWORD,
     CONF_USERNAME,
-    CONF_SCAN_INTERVAL
+    CONF_SCAN_INTERVAL,
+    CONF_OHV_API_ENDPOINT
 )
+
 from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -24,9 +26,9 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = "ovh"
 
 DEFAULT_INTERVAL = timedelta(minutes=15)
+DEFAULT_API_ENDPOINT = "www.ovh.com/nic/update"
 
 TIMEOUT = 30
-HOST = "www.ovh.com/nic/update"
 
 OVH_ERRORS = {
     "nohost": "Hostname supplied does not exist under specified account",
@@ -46,6 +48,7 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_INTERVAL): vol.All(
                     cv.time_period, cv.positive_timedelta
                 ),
+                vol.Optional(CONF_OHV_API_ENDPOINT, default=DEFAULT_API_ENDPOINT): cv.string,
             }
         )
     },
@@ -60,6 +63,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     user = conf.get(CONF_USERNAME).strip()
     password = conf.get(CONF_PASSWORD).strip()
     interval = conf.get(CONF_SCAN_INTERVAL)
+    api_endpoint = conf.get(CONF_OHV_API_ENDPOINT).strip()
     domains_list = domains.split(",")
 
     session = async_get_clientsession(hass)
@@ -79,10 +83,10 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     return True
 
 
-async def _update_ovh(session, domain, user, password):
+async def _update_ovh(session, api_endpoint, domain, user, password):
     """Update OVH."""
     try:
-        url = f"https://{user}:{password}@{HOST}?system=dyndns&hostname={domain}"
+        url = f"https://{user}:{password}@{api_endpoint}?system=dyndns&hostname={domain}"
         async with async_timeout.timeout(TIMEOUT):
             resp = await session.get(url)
             body = await resp.text()

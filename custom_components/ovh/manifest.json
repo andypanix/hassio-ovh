@@ -1,9 +1,9 @@
 {
   "domain": "ovh",
-  "name": "OVH DynHost",
-  "documentation": "https://github.com/GuilleGF/hassio-ovh/blob/master/README.md",
-  "issue_tracker": "https://github.com/GuilleGF/hassio-ovh/issues",
-  "codeowners": ["@GuilleGF"],
+  "name": "OVH DynHost with multiple domains",
+  "documentation": "https://github.com/andypanix/hassio-ovh/blob/master/README.md",
+  "issue_tracker": "https://github.com/andypanix/hassio-ovh/issues",
+  "codeowners": ["@andypanix"],
   "iot_class": "cloud_polling",
-  "version": "2.0.0"
+  "version": "0.0.1"
 }
