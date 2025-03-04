@@ -84,7 +84,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
     return True
 
-
 async def _update_ovh(session, api_endpoint, domain, user, password):
     """Update OVH."""
     global CURRENT_IPS
@@ -109,7 +108,12 @@ async def _update_ovh(session, api_endpoint, domain, user, password):
                 _LOGGER.info("OVH update for the domain: %s", domain)
                 return True
 
-            _LOGGER.warning("OVH upgrade failed: %s => %s", domain, OVH_ERRORS[body.strip()])
+            if "No record found" in body:
+                _LOGGER.error("DynHost record not found for %s domain. Verify that you have created it on OVH", domain)
+                return False
+
+            error_msg = OVH_ERRORS.get(body.strip(), f"Unknown error: {body}")
+            _LOGGER.warning("OVH upgrade failed for %s => %s", domain, error_msg)
 
     except aiohttp.ClientError:
         _LOGGER.warning("Unable to connect to the OVH API")
